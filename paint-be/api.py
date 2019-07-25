@@ -1,15 +1,25 @@
 import bottle as b
-from bottle import get, post, put, delete
+from bottle import get, post, put, delete, static_file
 import json
 import utils.db as db
 from utils.hashing import get_user_session_id, hash_password
 
+FE_BUILD_DIR = "../paint-fe/build"
+
+# Static files:
+@get('/static/<dirname:re:.*>/<filename:re:.*>')
+def serve_static_dir(dirname, filename):
+    return static_file(filename, root=f'{FE_BUILD_DIR}/static/{dirname}')
+
+@get("/<filename:re:.*>")
+def serve_root_dir(filename):
+    return static_file(filename, root=FE_BUILD_DIR)
 
 @get('/')
 def index():
     username = b.request.get_cookie("username")
     session_id = b.request.get_cookie("session_id")
-    res = b.static_file("/index.html", root="")
+    res = b.static_file("/index.html", root="../paint-fe/build")
     if not db.is_user_logged_in(username, session_id):
         res.set_cookie('session_id', '', expires=0)
         res.set_cookie('username', '', expires=0)

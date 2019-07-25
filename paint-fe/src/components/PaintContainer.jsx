@@ -126,7 +126,7 @@ export default class PaintContainer extends React.Component {
                             <div className="paint-list">
                                 {this.state.paintings.map(x =>
                                     <div key={x.name} className="paint-item"
-                                        onClick={(e) => { this.getPainting(e.target.textContent) }}>
+                                        onClick={(e) => { this.getPainting(x.name) }}>
                                         {x.name}
                                         <button onClick={() => this.deletePainting(x.name)}>&#10008;</button>
                                     </div>)
