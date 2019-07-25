@@ -2,9 +2,9 @@ A simple paint app
 
 ## Tech Stack
 
-JS - React
-Python - Bottle
-DB - pymysql (MySQL)
+JS - React<br>
+Python - Bottle<br>
+DB - pymysql (MySQL)<br>
 
 ### Build App and Install Depedencies
 Back End:
