@@ -16,8 +16,8 @@ class Tile extends React.Component {
     }
 
     render() {
-        var color = this.state.color;
-        var className = "tile " + color;
+        let color = this.state.color;
+        let className = "tile " + color;
         return (
             <div className={className} onMouseMove={this.paint} key={this.props.key}
                 style={{ top: this.props.y, left: this.props.x }}></div>

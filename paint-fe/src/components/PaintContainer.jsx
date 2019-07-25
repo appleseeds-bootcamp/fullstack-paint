@@ -1,4 +1,7 @@
 import React from "react";
+import LoginForm from "./LoginForm.jsx";
+import Tile from "./Tile.jsx";
+import Box from "./Box.jsx"
 
 class PaintApp extends React.Component {
     constructor(props) {
@@ -11,59 +14,52 @@ class PaintApp extends React.Component {
             paintings: []
         }
         this.brushSizes = [2, 4, 6, 8];
-        this.changeColor = this.changeColor.bind(this);
-        this.startDrawing = this.startDrawing.bind(this);
-        this.stopDrawing = this.stopDrawing.bind(this);
-        this.draw = this.draw.bind(this);
-        this.save = this.save.bind(this);
-        this.getPaintingList = this.getPaintingList.bind(this);
-        this.deletePainting = this.deletePainting.bind(this);
     }
 
-    changeColor(color) {
+    changeColor = (color) => {
         this.setState({
             color: color
         });
-    }
+    };
 
-    startDrawing() {
+    startDrawing = () => {
         this.setState({ isDrawing: true })
-    }
+    };
 
-    stopDrawing() {
+    stopDrawing = () => {
         this.setState({ isDrawing: false })
-    }
+    };
 
-    draw(e) {
+    draw = (e) => {
         if (this.state.isDrawing) {
-            var boundaries = e.target.getBoundingClientRect();
-            var left = e.pageX - boundaries.left;
-            var up = e.pageY - boundaries.top;
-            var tile = <Tile key={"" + left + Math.random()} color={this.state.color} x={left} y={up} />
-            var newTiles = this.state.tiles.slice();
+            let boundaries = e.target.getBoundingClientRect();
+            let left = e.pageX - boundaries.left;
+            let up = e.pageY - boundaries.top;
+            let tile = <Tile key={"" + left + Math.random()} color={this.state.color} x={left} y={up} />
+            let newTiles = this.state.tiles.slice();
             newTiles.push(tile);
             this.setState({
                 tiles: newTiles
             })
         }
-    }
+    };
 
-    getPainting(name) {
+    getPainting = (name) => {
         $.ajax({
             type: "GET",
             url: "/painting?name=" + name,
             dataType: "json",
             success: (data) => {
                 data = JSON.parse(data.painting);
-                var newTiles = data.map(x =>
+                let newTiles = data.map(x =>
                     <Tile color={x.props.color} x={x.props.x} y={x.props.y} />)
                 this.setState({ tiles: newTiles, paintings: [] })
             },
             error: () => { console.log("error saving") }
         });
-    }
+    };
 
-    deletePainting(name) {
+    deletePainting = (name) => {
         $.ajax({
             type: "DELETE",
             url: "/delete?name=" + name,
@@ -72,10 +68,10 @@ class PaintApp extends React.Component {
             },
             error: () => { console.log("error delete") }
         });
-    }
+    };
 
 
-    getPaintingList() {
+    getPaintingList = () => {
         $.ajax({
             type: "GET",
             url: "/paintings",
@@ -85,13 +81,13 @@ class PaintApp extends React.Component {
             },
             error: () => { console.log("error getting painting list") }
         });
+    };
+
+    addPainting = () => {
+
     }
 
-    addPainting() {
-
-    }
-
-    save() {
+    save = () => {
         $.ajax({
             type: "POST",
             url: "/save",
@@ -106,19 +102,14 @@ class PaintApp extends React.Component {
     }
 
     render() {
-        var colors = this.props.colors
+        let colors = this.props.colors
             .map(color => {
-                var selectedClass = this.state.color === color ? "selected" : "";
+                let selectedClass = this.state.color === color ? "selected" : "";
                 return <Box color={color} callback={this.changeColor} selected={selectedClass} key={color}> </Box>
             });
-        var login = this.props.username ? <div>Hello {this.props.username}</div> :
-            <form method="post" action="/login">
-                <input name="username" placeholder="username" />
-                <input type="password" name="password" placeholder="password" />
-                <input type="hidden" name="next_url" value="{{next_url}}" />
-                <input type="submit" value="signup/login" />
 
-            </form>;
+        let login = this.props.username ? <div>Hello {this.props.username}</div> :
+            <LoginForm />;
         return (
             <div>
                 <div className="user">
