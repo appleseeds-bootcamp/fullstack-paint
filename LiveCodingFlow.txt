@@ -1,0 +1,5 @@
+Use create-react-app
+
+remove .git folder which create-react-app creates
+
+remove redundant code and files in the template
