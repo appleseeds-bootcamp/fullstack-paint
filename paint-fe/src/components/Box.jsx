@@ -1,6 +1,6 @@
 import React from "react";
 
-class Box extends React.Component {
+export default class Box extends React.Component {
     constructor(props) {
         super(props);
         this.handleClick = this.handleClick.bind(this);

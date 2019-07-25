@@ -1,6 +1,6 @@
 import React from "react";
 
-class Tile extends React.Component {
+export default class Tile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

@@ -2,8 +2,9 @@ import React from "react";
 import LoginForm from "./LoginForm.jsx";
 import Tile from "./Tile.jsx";
 import Box from "./Box.jsx"
+import $ from "jquery";
 
-class PaintApp extends React.Component {
+export default class PaintContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

@@ -1,6 +1,6 @@
 import React from "react";
 
-class LoginForm extends React.Component {
+export default class LoginForm extends React.Component {
     render() {
         return (
             <form method="post" action="/login">
