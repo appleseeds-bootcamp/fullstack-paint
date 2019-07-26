@@ -110,8 +110,8 @@ export default class PaintContainer extends React.Component {
                         <div className="loaded">
                             <span className="menu-btn" onClick={() => this.getPaintingList()}>Load Paintings</span>
                             <div className="paint-list">
-                                {this.state.paintings.map(x =>
-                                    <div>
+                                {this.state.paintings.map((x,i) =>
+                                    <div key={i}>
                                         <span key={x.name} className="paint-item"
                                             onClick={(e) => { this.getPainting(x.name) }}>
                                             {x.name}
