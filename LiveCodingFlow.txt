@@ -9,5 +9,7 @@ remove redundant code and files in the template
 install jquery (npm install jquery)
 
 
-BE:
 
+
+BE:
+Make sure to add proxy to the package.json

@@ -1,20 +1,34 @@
 import React from "react";
 import LoginForm from "./LoginForm.jsx";
-import Tile from "./Tile.jsx";
 import Box from "./Box.jsx"
+import Canvas from "./Canvas.jsx";
 import $ from "jquery";
+
+// const BASE_URL = "http://localhost:8080"
+const BASE_URL = ""
 
 export default class PaintContainer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             color: "blue",
-            isDrawing: false,
-            tiles: [],
             paintingName: "",
-            paintings: []
+            paintings: [],
+            currentDrawingData: []
         }
         this.brushSizes = [2, 4, 6, 8];
+    }
+
+    updateDrawingData = (newTile) => {
+        this.setState({
+            currentDrawingData: [
+                ...this.state.currentDrawingData,
+                {
+                    x: newTile.x,
+                    y: newTile.y,
+                    color: this.state.color
+                }]
+        });
     }
 
     changeColor = (color) => {
@@ -23,38 +37,14 @@ export default class PaintContainer extends React.Component {
         });
     };
 
-    startDrawing = () => {
-        this.setState({ isDrawing: true })
-    };
-
-    stopDrawing = () => {
-        this.setState({ isDrawing: false })
-    };
-
-    draw = (e) => {
-        if (this.state.isDrawing) {
-            let boundaries = e.target.getBoundingClientRect();
-            let left = e.pageX - boundaries.left;
-            let up = e.pageY - boundaries.top;
-            let tile = <Tile key={"" + left + Math.random()} color={this.state.color} x={left} y={up} />
-            let newTiles = this.state.tiles.slice();
-            newTiles.push(tile);
-            this.setState({
-                tiles: newTiles
-            })
-        }
-    };
-
     getPainting = (name) => {
         $.ajax({
             type: "GET",
-            url: "/painting?name=" + name,
+            url: BASE_URL + "/painting?name=" + name,
             dataType: "json",
             success: (data) => {
                 data = JSON.parse(data.painting);
-                let newTiles = data.map(x =>
-                    <Tile color={x.props.color} x={x.props.x} y={x.props.y} />)
-                this.setState({ tiles: newTiles, paintings: [] })
+                this.setState({ currentDrawingData: data, paintings: [] })
             },
             error: () => { console.log("error saving") }
         });
@@ -63,7 +53,7 @@ export default class PaintContainer extends React.Component {
     deletePainting = (name) => {
         $.ajax({
             type: "DELETE",
-            url: "/delete?name=" + name,
+            url: BASE_URL + "/delete?name=" + name,
             success: () => {
                 this.getPaintingList();
             },
@@ -75,7 +65,7 @@ export default class PaintContainer extends React.Component {
     getPaintingList = () => {
         $.ajax({
             type: "GET",
-            url: "/paintings",
+            url: BASE_URL + "/paintings",
             dataType: "json",
             success: (data) => {
                 this.setState({ paintings: data.paintings });
@@ -84,16 +74,12 @@ export default class PaintContainer extends React.Component {
         });
     };
 
-    addPainting = () => {
-
-    }
-
     save = () => {
         $.ajax({
             type: "POST",
-            url: "/save",
+            url: BASE_URL + "/save",
             contentType: "application/json",
-            data: JSON.stringify({ painting: this.state.tiles, name: this.state.paintingName }),
+            data: JSON.stringify({ painting: this.state.currentDrawingData, name: this.state.paintingName }),
             success: () => {
                 this.setState({ paintingName: "" });
                 this.getPaintingList();
@@ -125,9 +111,11 @@ export default class PaintContainer extends React.Component {
                             <span className="menu-btn" onClick={() => this.getPaintingList()}>Load Paintings</span>
                             <div className="paint-list">
                                 {this.state.paintings.map(x =>
-                                    <div key={x.name} className="paint-item"
-                                        onClick={(e) => { this.getPainting(x.name) }}>
-                                        {x.name}
+                                    <div>
+                                        <span key={x.name} className="paint-item"
+                                            onClick={(e) => { this.getPainting(x.name) }}>
+                                            {x.name}
+                                        </span>
                                         <button onClick={() => this.deletePainting(x.name)}>&#10008;</button>
                                     </div>)
                                 }
@@ -138,10 +126,7 @@ export default class PaintContainer extends React.Component {
                     <div className="menu">
                         {colors}
                     </div>
-                    <div className="board" onDragLeave={() => this.stopDrawing()} onMouseUp={this.stopDrawing}
-                        onMouseDown={this.startDrawing} onMouseMove={this.draw} >
-                        {this.state.tiles}
-                    </div>
+                    <Canvas color={this.state.color} drawingData={this.state.currentDrawingData} handleDrawingDataUpdated={this.updateDrawingData} />
                 </div>
             </div>
         );

@@ -1,5 +1,5 @@
 import bottle as b
-from bottle import get, post, put, delete, static_file
+from bottle import get, post, put, delete, static_file,hook
 import json
 import utils.db as db
 from utils.hashing import get_user_session_id, hash_password
@@ -14,6 +14,16 @@ def serve_static_dir(dirname, filename):
 @get("/<filename:re:.*>")
 def serve_root_dir(filename):
     return static_file(filename, root=FE_BUILD_DIR)
+
+@hook('after_request')
+def enable_cors():
+    """
+    You need to add some headers to each request.
+    Don't use the wildcard '*' for Access-Control-Allow-Origin in production.
+    """
+    b.response.headers['Access-Control-Allow-Origin'] = '*'
+    b.response.headers['Access-Control-Allow-Methods'] = 'PUT, GET, POST, DELETE, OPTIONS'
+    b.response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
 
 @get('/')
 def index():
