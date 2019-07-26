@@ -13,7 +13,6 @@ export default class Canvas extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.drawingData && nextProps.drawingData !== this.props.drawingData) {
-            console.log(nextProps);
             this.setState({
                 tiles: this.createTilesFromData(nextProps.drawingData)
             });
@@ -21,8 +20,8 @@ export default class Canvas extends React.Component {
     }
 
     createTilesFromData = (drawingData) => {
-        return drawingData.map(tileData =>
-            <Tile {...tileData} />)
+        return drawingData.map((tileData,i) =>
+            <Tile key={i} {...tileData} />)
     }
 
     draw = (e) => {
@@ -32,13 +31,9 @@ export default class Canvas extends React.Component {
             let up = e.pageY - boundaries.top;
 
             this.props.handleDrawingDataUpdated({ x: left, y: up });
-
-            let tile = <Tile key={"" + left + Math.random()} color={this.props.color} x={left} y={up} />
-            let newTiles = this.state.tiles.slice();
-            newTiles.push(tile);
-            this.setState({
-                tiles: newTiles
-            })
+            
+            // The tiles themselve will be updated on componentWillReceiveProps
+            // because the state in the parent class changes
         }
     };
 
