@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Paint Login</title>
+</head>
+
+<body>
+    <form method="post" action="/login">
+        <input name="username" placeholder="username" />
+        <input type="password" name="password" placeholder="password" />
+        <input type="hidden" name="next_url" value="{{next_url}}" />
+        <input type="submit" value="signup/login" />
+
+        <div>
+            {{err_msg}}
+        </div>
+    </form>
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        form {
+            display: flex;
+            background: lightgray;
+            box-shadow: 10px;
+            align-items: center;
+            flex-direction: column;
+            width: 50%;
+            padding: 1em;
+        }
+        
+        input {
+            margin: 1em;
+        }
+    </style>
+</body>
+
+</html>

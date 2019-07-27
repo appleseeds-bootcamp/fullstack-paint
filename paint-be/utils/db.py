@@ -59,15 +59,28 @@ def is_user_logged_in(username, session_id):
         return False
 
 
-def is_user_exist(username, password):
+def is_user_exist(username):
     try:
         with connection.cursor() as cursor:
-            query = "SELECT * FROM users WHERE username = '{}' AND password = '{}'".format(
+            query = "SELECT * FROM users WHERE username = '{}'".format(
+                username)
+            cursor.execute(query)
+            result = cursor.fetchone()
+            return result is not None
+    except Exception as ex:
+        print(ex)
+        return False
+
+def verify_user_password(username, password):
+    try:
+        with connection.cursor() as cursor:
+            query = "SELECT * FROM users WHERE username = '{}' AND password ='{}'".format(
                 username, password)
             cursor.execute(query)
             result = cursor.fetchone()
             return result is not None
-    except Exception:
+    except Exception as ex:
+        print(ex)
         return False
 
 
@@ -83,7 +96,7 @@ def add_new_user(username, password, session_id):
             connection.commit()
     except Exception as e:
         print(e)
-        return json.dumps("error writing to DB")
+        return False
 
 
 def update_user_session(username, password, session_id):
@@ -95,3 +108,4 @@ def update_user_session(username, password, session_id):
             connection.commit()
     except Exception as e:
         print(e)
+        return False

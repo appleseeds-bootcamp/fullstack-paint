@@ -1,8 +1,8 @@
 import bottle as b
-from bottle import get, post, put, delete, static_file,hook
+from bottle import get, post, put, delete, static_file, hook, template
 import json
 import utils.db as db
-from utils.hashing import get_user_session_id, hash_password
+from utils.login import get_user_session_id, hash_password, isUserLoggedIn, loginUserOrSignUp
 
 FE_BUILD_DIR = "../paint-fe/build"
 
@@ -11,19 +11,23 @@ FE_BUILD_DIR = "../paint-fe/build"
 def serve_static_dir(dirname, filename):
     return static_file(filename, root=f'{FE_BUILD_DIR}/static/{dirname}')
 
+
 @get("/<filename:re:.*>")
 def serve_root_dir(filename):
     return static_file(filename, root=FE_BUILD_DIR)
-    
+
+
 @get('/')
 def index():
     username = b.request.get_cookie("username")
     session_id = b.request.get_cookie("session_id")
-    res = b.static_file("/index.html", root="../paint-fe/build")
     if not db.is_user_logged_in(username, session_id):
+        res = b.redirect("/login?next_url=/")
         res.set_cookie('session_id', '', expires=0)
         res.set_cookie('username', '', expires=0)
-    return res
+        return res
+
+    return static_file("/index.html", root="../paint-fe/build")
 
 
 @post('/save')
@@ -77,18 +81,28 @@ def get_painting():
         return json.dumps("error writing to DB")
 
 
+@get("/login")
+def render_login_page():
+    username = b.request.get_cookie("username")
+    if not isUserLoggedIn(b.request, username):
+        requested_url = b.request.get("next_url", "/")
+        context = {"next_url": requested_url, "err_msg": ""}
+        return template("templates/login.html", **context)
+    else:
+        return b.redirect("/")
+
+
 @post('/login')
-def signup():
+def login_or_signup():
     username = b.request.forms.get("username")
     password = b.request.forms.get("password")
-    hashed_password = hash_password(password)
-    session_id = b.request.get_cookie("session_id")
-    new_session_id = get_user_session_id()
-    if db.is_user_logged_in(username, session_id):
-        return b.static_file('index.html')
-    if not db.is_user_exist(username, hashed_password):
-        db.add_new_user(username, hashed_password, new_session_id)
-    db.update_user_session(username, hashed_password, new_session_id)
-    b.response.set_cookie("session_id", new_session_id)
-    b.response.set_cookie("username", username)
-    b.redirect('/')
+
+    if not isUserLoggedIn(b.request, username):
+        new_session_id = loginUserOrSignUp(username, password)
+        if new_session_id:
+            b.response.set_cookie("session_id", new_session_id)
+            b.response.set_cookie("username", username)
+        else:
+            return template("templates/login.html", next_url="/", err_msg="Bad username/password, try again")
+
+    return b.redirect("/")
