@@ -1,4 +1,4 @@
-A simple paint app
+# A simple paint app
 
 ## Tech Stack
 
@@ -9,7 +9,7 @@ DB - pymysql (MySQL)<br>
 ## Build App and Install Depedencies
 ### Back End:
 ```
-$ cd paint-
+$ cd paint-be
 
 Install the DB (located in paintDb.sql)
 
