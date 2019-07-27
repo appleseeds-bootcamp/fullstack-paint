@@ -9,7 +9,7 @@ function getCookie(name) {
 }
 
 function App() {
-    // let username = getCookie("username");
+    let username = getCookie("username");
     let username = "matan";
     let colors = ["green", "blue", "pink", "purple"];
 
