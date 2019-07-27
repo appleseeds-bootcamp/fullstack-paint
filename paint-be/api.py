@@ -14,6 +14,8 @@ def serve_static_dir(dirname, filename):
 
 @get("/<filename:re:.*>")
 def serve_root_dir(filename):
+    if filename == "index.html": # We want to avoid getting /index.html directly.
+        b.redirect("/")
     return static_file(filename, root=FE_BUILD_DIR)
 
 
